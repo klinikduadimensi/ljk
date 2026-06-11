@@ -1,156 +1,273 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LJK Digital Terintegrasi</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .header { text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 15px; margin-bottom: 25px; }
-        .header h1 { margin: 0; color: #333; }
-        .header p { color: #666; margin: 5px 0 0 0; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        .btn:hover { background-color: #0056b3; }
-        
-        /* Sectioning */
-        #section-ljk { display: none; } /* Disembunyikan awalnya */
-        
-        /* Style untuk soal (Contoh Pilihan Ganda sederhana) */
-        .soal-item { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
-        .opsi-group { display: flex; gap: 15px; margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* CSS SAMA SEPERTI SEBELUMNYA */
+    :root { 
+      --primary: #0e58a6; 
+      --primary-light: #e7eff7;
+      --secondary: #06294d;
+      --bg: #f4f7fa; 
+      --surface: #ffffff;
+      --text-main: #1e293b; 
+      --text-sub: #64748b;
+      --border: #e2e8f0; 
+      --timer-bg: #fee2e2;
+      --timer-text: #b91c1c;
+      --timer-border: #f87171;
+    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text-main); padding: 20px; margin: 0; line-height: 1.6; }
+    .container { width: 100%; max-width: 800px; margin: 0 auto; }
+    .timer-card { background: var(--timer-bg); color: var(--timer-text); border: 1px solid var(--timer-border); padding: 15px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 20px; display: none; }
+    .header-card { background: var(--surface); padding: 30px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; border-top: 6px solid var(--primary); }
+    .logo-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .logo-container img { height: 60px; width: auto; object-fit: contain; }
+    .header-text { text-align: center; }
+    h2 { margin: 0; color: var(--primary); font-size: 22px; letter-spacing: -0.5px; }
+    h4 { margin: 0; color: var(--secondary); font-size: 16px; letter-spacing: -0.5px; }
+    p.subtitle { color: var(--text-sub); margin-top: 8px; font-size: 14px; }
+    .section-title { background: var(--primary); color: white; padding: 12px 20px; border-radius: 12px; margin: 40px auto 20px auto; font-weight: 700; font-size: 14px; text-transform: uppercase; display: block; width: fit-content; }
+    .form-group { background: var(--surface); margin-bottom: 16px; padding: 20px; border-radius: 16px; border: 1px solid var(--border); }
+    input[type="text"], input[type="tel"] { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 16px; box-sizing: border-box; margin-bottom: 15px; outline: none; }
+    input:focus { border-color: var(--primary); }
+    input:read-only { background-color: #f1f5f9; color: var(--text-sub); cursor: not-allowed; } 
+    .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+    .option-label { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 14px; }
+    .option-label:has(input:checked) { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .bs-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+    .bs-table th { padding: 10px; color: var(--text-sub); font-size: 12px; }
+    .bs-table td { padding: 12px; background: #f8fafc; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: center;}
+    .bs-table td:first-child { border-left: 1px solid var(--border); border-radius: 8px 0 0 8px; text-align: left; }
+    .bs-table td:last-child { border-right: 1px solid var(--border); border-radius: 0 8px 8px 0; }
+    button { background: var(--primary); color: white; border: none; padding: 18px; width: 100%; font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer; margin-top: 10px; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    #btnMulai { background: var(--secondary); margin-top: 20px; }
+    #pesan { margin-top: 25px; text-align: center; padding: 20px; border-radius: 12px; display: none; }
+    .success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; display: block !important; }
+    #loading-soal { text-align: center; padding: 20px; color: var(--primary); font-weight: bold; display: none; }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="header">
-        <h1>LJK Digital</h1>
-        <p>Ujian Berbasis Komputer & Spreadsheet</p>
+  <div class="container">
+    
+    <div class="timer-card" id="timer-display">
+      Sisa Waktu: --:--
     </div>
 
-    <form id="ljkForm">
-        <div id="section-data-diri">
-            <h3>Identitas Siswa</h3>
-            <div class="form-group">
-                <label for="nama">Nama Lengkap *</label>
-                <input type="text" id="nama" name="nama" required>
-            </div>
-            <div class="form-group">
-                <label for="sekolah">Asal Sekolah *</label>
-                <input type="text" id="sekolah" name="sekolah" required>
-            </div>
-            <div class="form-group">
-                <label for="kelas">Kelas *</label>
-                <input type="text" id="kelas" name="kelas" required>
-            </div>
-            <button type="button" class="btn" onclick="nextSection()">Lanjut ke Soal</button>
-        </div>
+    <div class="header-card">
+      <div class="logo-container">
+        <img src="https://smpmusade1.wordpress.com/wp-content/uploads/2020/09/cropped-logo-1.png?w=540" alt="Logo Kiri">
+        <img src="https://lh3.googleusercontent.com/d/196-yYlDwDc-tUVDTslzPAlBWTmf4ZbWg" alt="Logo Kanan">
+      </div>
+      <div class="header-text">
+        <h2>LJK TKAD SMP</h2>
+        <h4>DUA DIMENSI GEJAYAN X SMP MUHAMMADIYAH 1 DEPOK</h4>
+        <p class="subtitle">Silahkan lengkapi data diri Anda sebelum mulai mengerjakan</p>
+      </div>
+      
+      <div style="margin-top:25px; text-align: left;" id="form-data-diri">
+        <input type="text" id="nama" required placeholder="Nama Lengkap Siswa">
+        <input type="tel" id="wa_siswa" required placeholder="Nomor WhatsApp Siswa" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        <input type="tel" id="wa_ortu" required placeholder="Nomor WhatsApp Orang Tua" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        <input type="text" id="kelas" required placeholder="Kelas">
+      </div>
 
-        <div id="section-ljk">
-            <h3>Lembar Jawaban</h3>
-            <p style="color: red; font-size: 14px;">*Pastikan data diri Anda sudah benar sebelum mengisi soal.</p>
-            
-            <div id="tempat-soal">
-                <div class="soal-item">
-                    <label>1. Jawaban No 1</label>
-                    <div class="opsi-group">
-                        <label><input type="radio" name="soal_1" value="A" required> A</label>
-                        <label><input type="radio" name="soal_1" value="B"> B</label>
-                        <label><input type="radio" name="soal_1" value="C"> C</label>
-                        <label><input type="radio" name="soal_1" value="D"> D</label>
-                    </div>
-                </div>
-                </div>
+      <button type="button" id="btnMulai" onclick="mulaiUjian()">Mulai Mengerjakan</button>
+      <div id="loading-soal">Memuat soal dari server... Mohon tunggu.</div>
+    </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button type="button" class="btn" style="background-color: #6c757d;" onclick="prevSection()">Kembali</button>
-                <button type="submit" class="btn" style="background-color: #28a745;">Kirim Jawaban</button>
-            </div>
-        </div>
+    <form id="ljkForm" onsubmit="event.preventDefault(); submitData(false);" style="display: none;">
+      <div id="soal-container"></div>
+      <button type="submit" id="btnSubmit" style="margin-top: 30px;">Selesaikan & Kirim Jawaban</button>
+      <div id="pesan"></div>
     </form>
-</div>
+    
+    <div class="footer-bottom">
+      <p style="text-align: center; color: #06294d; margin-top: 30px;">© 2026 Klinik Edukasi Dua Dimensi. All Rights Reserved.</p>
+    </div>
+  </div>
 
-<script>
-    // GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbysDQ8V8DUSdS67BlfI0uWxaj7OyJemRlorU0Cya-7S4mOUVs-Bk8Fnk8FldHQxjUmQ4w/exec'; 
+  <script>
+    // Variabel Global untuk menyimpan data dari server
+    let configSoal = [];
+    let configMapel = [];
 
-    const sectionDataDiri = document.getElementById('section-data-diri');
-    const sectionLJK = document.getElementById('section-ljk');
-    const form = document.getElementById('ljkForm');
+    // --- PENGATURAN DURASI WAKTU (DALAM MENIT) ---
+    const DURASI_MENIT = 60;
+    let timeRemaining = DURASI_MENIT * 60; 
+    let timerInterval;
 
-    // Fungsi transisi ke LJK
-    function nextSection() {
-        // Validasi form data diri (HTML5 required check)
-        const nama = document.getElementById('nama').value;
-        const sekolah = document.getElementById('sekolah').value;
-        const kelas = document.getElementById('kelas').value;
+    function mulaiUjian() {
+      const namaVal = document.getElementById('nama').value;
+      const waSiswaVal = document.getElementById('wa_siswa').value;
+      const waOrtuVal = document.getElementById('wa_ortu').value;
+      const kelasVal = document.getElementById('kelas').value;
 
-        if(!nama || !sekolah || !kelas) {
-            alert("Harap lengkapi Nama, Sekolah, dan Kelas terlebih dahulu!");
-            return;
-        }
+      if (!namaVal.trim() || !waSiswaVal.trim() || !waOrtuVal.trim() || !kelasVal.trim()) {
+        alert("Mohon lengkapi Nama, WA Siswa, WA Orang Tua, dan Kelas terlebih dahulu sebelum mulai mengerjakan!");
+        return;
+      }
 
-        sectionDataDiri.style.display = 'none';
-        sectionLJK.style.display = 'block';
+      // Kunci input data diri
+      document.getElementById('nama').readOnly = true;
+      document.getElementById('wa_siswa').readOnly = true;
+      document.getElementById('wa_ortu').readOnly = true;
+      document.getElementById('kelas').readOnly = true;
+
+      document.getElementById('btnMulai').style.display = 'none';
+      document.getElementById('loading-soal').style.display = 'block';
+
+      // Panggil fungsi GAS untuk mengambil data dinamis
+      google.script.run
+        .withSuccessHandler(function(dataServer) {
+           configMapel = dataServer.mapel;
+           configSoal = dataServer.soal;
+           
+           document.getElementById('loading-soal').style.display = 'none';
+           document.getElementById('timer-display').style.display = 'block';
+           document.getElementById('ljkForm').style.display = 'block';
+           document.querySelector('.subtitle').innerText = "Silahkan isi jawaban Anda dengan teliti";
+           
+           renderSoal();
+           startTimer();
+        })
+        .withFailureHandler(function(err){
+           alert("Gagal memuat soal. Pastikan koneksi internet stabil. Error: " + err);
+           document.getElementById('btnMulai').style.display = 'block';
+           document.getElementById('loading-soal').style.display = 'none';
+        })
+        .getSoalData();
     }
 
-    // Fungsi kembali ke Data Diri
-    function prevSection() {
-        sectionLJK.style.display = 'none';
-        sectionDataDiri.style.display = 'block';
+    function startTimer() {
+      const timerDisplay = document.getElementById('timer-display');
+      timerInterval = setInterval(() => {
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.innerText = "Waktu Habis!";
+          submitData(true); 
+        } else {
+          let minutes = Math.floor(timeRemaining / 60);
+          let seconds = timeRemaining % 60;
+          timerDisplay.innerText = `Sisa Waktu: ${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+          timeRemaining--;
+        }
+      }, 1000);
     }
 
-    // Fungsi Submit Form ke Google Apps Script
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Kumpulkan data siswa
-        const payload = {
-            nama: document.getElementById('nama').value,
-            sekolah: document.getElementById('sekolah').value,
-            kelas: document.getElementById('kelas').value,
-            jawaban: {}
-        };
 
-        // Kumpulkan jawaban (Ambil semua input radio yang di-check)
-        const formData = new FormData(form);
-        for (let [key, value] of formData.entries()) {
-            if(key.startsWith('soal_')) {
-                payload.jawaban[key] = value;
+    function renderSoal() {
+      const container = document.getElementById('soal-container');
+      let html = '';
+      
+      configSoal.forEach((item) => {
+        // Cek apakah No Soal ini adalah awal dari suatu Mapel
+        configMapel.forEach(mapel => {
+            if(item.no === mapel.mulai) {
+                html += `<div class="section-title">${mapel.nama}</div>`;
             }
-        }
-
-        // Tampilkan loading (opsional)
-        document.querySelector('button[type="submit"]').innerText = 'Mengirim...';
-
-        // Kirim via fetch API ke GAS
-        fetch(GAS_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload),
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.status === 'success') {
-                alert('Jawaban berhasil dikirim!');
-                form.reset();
-                prevSection(); // Kembali ke halaman awal setelah sukses
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan, pastikan koneksi internet stabil.');
-        })
-        .finally(() => {
-            document.querySelector('button[type="submit"]').innerText = 'Kirim Jawaban';
         });
-    });
-</script>
+
+        html += `<div class="form-group">`;
+        
+        if (item.tipe === 'single') {
+          html += `<label class="question">Soal No. ${item.no}</label><div class="options-grid">`;
+          ['A','B','C','D'].forEach(opt => {
+            html += `<label class="option-label"><input type="radio" name="q${item.no}" value="${opt}"> ${opt}</label>`;
+          });
+          html += `</div>`;
+        } 
+        else if (item.tipe === 'mcma') {
+          html += `<label class="question">Soal No. ${item.no} (Pilih Pernyataan)</label><div class="options-grid">`;
+          ['1','2','3','4'].forEach(opt => {
+            html += `<label class="option-label"><input type="checkbox" name="q${item.no}" value="${opt}"> P-${opt}</label>`;
+          });
+          html += `</div>`;
+        } 
+        else if (item.tipe === 'matrix') {
+          // Parse kolom matrix dari string (misal: "B,S" atau "T,F")
+          let cols = item.kolom.split(',').map(c => c.trim());
+
+          html += `<label class="question">Soal No. ${item.no}</label><table class="bs-table"><tr><th>Pernyataan</th>`;
+          cols.forEach(c => html += `<th>${c}</th>`);
+          html += `</tr>`;
+          for(let r=1; r<=item.baris; r++) {
+            html += `<tr><td>Pernyataan ${r}</td>`;
+            cols.forEach(c => {
+              html += `<td><input type="radio" name="q${item.no}_r${r}" value="${c}"></td>`;
+            });
+            html += `</tr>`;
+          }
+          html += `</table>`;
+        }
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function submitData(isAutoSubmit) {
+      let namaVal = document.getElementById('nama').value;
+      let waSiswaVal = document.getElementById('wa_siswa').value;
+      let waOrtuVal = document.getElementById('wa_ortu').value;
+      let kelasVal = document.getElementById('kelas').value;
+      
+      const btn = document.getElementById('btnSubmit');
+      const pesanDiv = document.getElementById('pesan');
+
+      if (!isAutoSubmit) {
+        if (!namaVal.trim() || !waSiswaVal.trim() || !waOrtuVal.trim() || !kelasVal.trim()) {
+          alert("Mohon lengkapi data diri!");
+          return;
+        }
+      } else {
+        if (!namaVal.trim()) namaVal = "TIDAK DIISI (AUTO SUBMIT)";
+        if (!waSiswaVal.trim()) waSiswaVal = "-";
+        if (!waOrtuVal.trim()) waOrtuVal = "-";
+        if (!kelasVal.trim()) kelasVal = "-";
+      }
+
+      clearInterval(timerInterval); 
+
+      btn.innerText = 'Mengirim Jawaban...'; btn.disabled = true;
+      
+      let dataLJK = { 
+        nama: namaVal, waSiswa: waSiswaVal, waOrtu: waOrtuVal, kelas: kelasVal
+      };
+
+      // Kumpulkan Jawaban berdasarkan configSoal yang didapat dari server
+      configSoal.forEach(item => {
+        if (item.tipe === 'single') {
+          const el = document.querySelector(`input[name="q${item.no}"]:checked`);
+          dataLJK[`q${item.no}`] = el ? el.value : "";
+        } else if (item.tipe === 'mcma') {
+          const els = document.querySelectorAll(`input[name="q${item.no}"]:checked`);
+          dataLJK[`q${item.no}`] = Array.from(els).map(e => e.value);
+        } else if (item.type === 'matrix') {
+          let arr = [];
+          for(let r=1; r<=item.baris; r++) {
+            const el = document.querySelector(`input[name="q${item.no}_r${r}"]:checked`);
+            arr.push(el ? el.value : "");
+          }
+          dataLJK[`q${item.no}`] = arr;
+        }
+      });
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          pesanDiv.innerHTML = response;
+          pesanDiv.className = 'success';
+          btn.innerText = 'Terkirim';
+          window.scrollTo(0, 0);
+          
+          document.getElementById('ljkForm').style.display = 'none';
+          document.getElementById('timer-display').style.display = 'none';
+        })
+        .submitJawaban(dataLJK);
+    }
+  </script>
 </body>
 </html>
