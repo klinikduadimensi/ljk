@@ -2,23 +2,14 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LJK Digital Terintegrasi</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* CSS SAMA SEPERTI SEBELUMNYA */
     :root { 
-      --primary: #0e58a6; 
-      --primary-light: #e7eff7;
-      --secondary: #06294d;
-      --bg: #f4f7fa; 
-      --surface: #ffffff;
-      --text-main: #1e293b; 
-      --text-sub: #64748b;
-      --border: #e2e8f0; 
-      --timer-bg: #fee2e2;
-      --timer-text: #b91c1c;
-      --timer-border: #f87171;
+      --primary: #0e58a6; var(--primary-light): #e7eff7; --secondary: #06294d;
+      --bg: #f4f7fa; --surface: #ffffff; --text-main: #1e293b; --text-sub: #64748b;
+      --border: #e2e8f0; --timer-bg: #fee2e2; --timer-text: #b91c1c; --timer-border: #f87171;
     }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text-main); padding: 20px; margin: 0; line-height: 1.6; }
     .container { width: 100%; max-width: 800px; margin: 0 auto; }
@@ -32,13 +23,13 @@
     p.subtitle { color: var(--text-sub); margin-top: 8px; font-size: 14px; }
     .section-title { background: var(--primary); color: white; padding: 12px 20px; border-radius: 12px; margin: 40px auto 20px auto; font-weight: 700; font-size: 14px; text-transform: uppercase; display: block; width: fit-content; }
     .form-group { background: var(--surface); margin-bottom: 16px; padding: 20px; border-radius: 16px; border: 1px solid var(--border); }
-    input[type="text"], input[type="tel"] { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 16px; box-sizing: border-box; margin-bottom: 15px; outline: none; }
+    input[type="text"] { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 16px; box-sizing: border-box; margin-bottom: 15px; outline: none; }
     input:focus { border-color: var(--primary); }
     input:read-only { background-color: #f1f5f9; color: var(--text-sub); cursor: not-allowed; } 
     .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
     .option-label { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 14px; }
-    .option-label:has(input:checked) { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
-    .bs-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+    .option-label:has(input:checked) { background: #e7eff7; border-color: var(--primary); color: var(--primary); }
+    .bs-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; overflow-x: auto; display: block; white-space: nowrap; }
     .bs-table th { padding: 10px; color: var(--text-sub); font-size: 12px; }
     .bs-table td { padding: 12px; background: #f8fafc; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: center;}
     .bs-table td:first-child { border-left: 1px solid var(--border); border-radius: 8px 0 0 8px; text-align: left; }
@@ -53,10 +44,7 @@
 </head>
 <body>
   <div class="container">
-    
-    <div class="timer-card" id="timer-display">
-      Sisa Waktu: --:--
-    </div>
+    <div class="timer-card" id="timer-display">Sisa Waktu: --:--</div>
 
     <div class="header-card">
       <div class="logo-container">
@@ -71,8 +59,7 @@
       
       <div style="margin-top:25px; text-align: left;" id="form-data-diri">
         <input type="text" id="nama" required placeholder="Nama Lengkap Siswa">
-        <input type="tel" id="wa_siswa" required placeholder="Nomor WhatsApp Siswa" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
-        <input type="tel" id="wa_ortu" required placeholder="Nomor WhatsApp Orang Tua" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        <input type="text" id="sekolah" required placeholder="Asal Sekolah Siswa">
         <input type="text" id="kelas" required placeholder="Kelas">
       </div>
 
@@ -92,38 +79,37 @@
   </div>
 
   <script>
-    // Variabel Global untuk menyimpan data dari server
+    // MASUKKAN URL GAS ANDA DI SINI
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbysDQ8V8DUSdS67BlfI0uWxaj7OyJemRlorU0Cya-7S4mOUVs-Bk8Fnk8FldHQxjUmQ4w/exec';
+
     let configSoal = [];
     let configMapel = [];
 
-    // --- PENGATURAN DURASI WAKTU (DALAM MENIT) ---
     const DURASI_MENIT = 60;
     let timeRemaining = DURASI_MENIT * 60; 
     let timerInterval;
 
     function mulaiUjian() {
       const namaVal = document.getElementById('nama').value;
-      const waSiswaVal = document.getElementById('wa_siswa').value;
-      const waOrtuVal = document.getElementById('wa_ortu').value;
+      const sekolahVal = document.getElementById('sekolah').value;
       const kelasVal = document.getElementById('kelas').value;
 
-      if (!namaVal.trim() || !waSiswaVal.trim() || !waOrtuVal.trim() || !kelasVal.trim()) {
-        alert("Mohon lengkapi Nama, WA Siswa, WA Orang Tua, dan Kelas terlebih dahulu sebelum mulai mengerjakan!");
+      if (!namaVal.trim() || !sekolahVal.trim() || !kelasVal.trim()) {
+        alert("Mohon lengkapi Nama, Sekolah, dan Kelas terlebih dahulu!");
         return;
       }
 
-      // Kunci input data diri
       document.getElementById('nama').readOnly = true;
-      document.getElementById('wa_siswa').readOnly = true;
-      document.getElementById('wa_ortu').readOnly = true;
+      document.getElementById('sekolah').readOnly = true;
       document.getElementById('kelas').readOnly = true;
 
       document.getElementById('btnMulai').style.display = 'none';
       document.getElementById('loading-soal').style.display = 'block';
 
-      // Panggil fungsi GAS untuk mengambil data dinamis
-      google.script.run
-        .withSuccessHandler(function(dataServer) {
+      // Mengambil data menggunakan Fetch API (Standar untuk GitHub Pages)
+      fetch(GAS_URL)
+        .then(response => response.json())
+        .then(dataServer => {
            configMapel = dataServer.mapel;
            configSoal = dataServer.soal;
            
@@ -135,12 +121,11 @@
            renderSoal();
            startTimer();
         })
-        .withFailureHandler(function(err){
-           alert("Gagal memuat soal. Pastikan koneksi internet stabil. Error: " + err);
+        .catch(err => {
+           alert("Gagal memuat soal. Pastikan koneksi internet stabil.");
            document.getElementById('btnMulai').style.display = 'block';
            document.getElementById('loading-soal').style.display = 'none';
-        })
-        .getSoalData();
+        });
     }
 
     function startTimer() {
@@ -159,17 +144,13 @@
       }, 1000);
     }
 
-
     function renderSoal() {
       const container = document.getElementById('soal-container');
       let html = '';
       
       configSoal.forEach((item) => {
-        // Cek apakah No Soal ini adalah awal dari suatu Mapel
         configMapel.forEach(mapel => {
-            if(item.no === mapel.mulai) {
-                html += `<div class="section-title">${mapel.nama}</div>`;
-            }
+            if(item.no === mapel.mulai) { html += `<div class="section-title">${mapel.nama}</div>`; }
         });
 
         html += `<div class="form-group">`;
@@ -189,9 +170,7 @@
           html += `</div>`;
         } 
         else if (item.tipe === 'matrix') {
-          // Parse kolom matrix dari string (misal: "B,S" atau "T,F")
           let cols = item.kolom.split(',').map(c => c.trim());
-
           html += `<label class="question">Soal No. ${item.no}</label><table class="bs-table"><tr><th>Pernyataan</th>`;
           cols.forEach(c => html += `<th>${c}</th>`);
           html += `</tr>`;
@@ -211,34 +190,25 @@
 
     function submitData(isAutoSubmit) {
       let namaVal = document.getElementById('nama').value;
-      let waSiswaVal = document.getElementById('wa_siswa').value;
-      let waOrtuVal = document.getElementById('wa_ortu').value;
+      let sekolahVal = document.getElementById('sekolah').value;
       let kelasVal = document.getElementById('kelas').value;
       
       const btn = document.getElementById('btnSubmit');
       const pesanDiv = document.getElementById('pesan');
 
       if (!isAutoSubmit) {
-        if (!namaVal.trim() || !waSiswaVal.trim() || !waOrtuVal.trim() || !kelasVal.trim()) {
-          alert("Mohon lengkapi data diri!");
-          return;
-        }
+        if (!namaVal.trim() || !sekolahVal.trim() || !kelasVal.trim()) { alert("Mohon lengkapi data diri!"); return; }
       } else {
-        if (!namaVal.trim()) namaVal = "TIDAK DIISI (AUTO SUBMIT)";
-        if (!waSiswaVal.trim()) waSiswaVal = "-";
-        if (!waOrtuVal.trim()) waOrtuVal = "-";
+        if (!namaVal.trim()) namaVal = "TIDAK DIISI";
+        if (!sekolahVal.trim()) sekolahVal = "-";
         if (!kelasVal.trim()) kelasVal = "-";
       }
 
       clearInterval(timerInterval); 
-
       btn.innerText = 'Mengirim Jawaban...'; btn.disabled = true;
       
-      let dataLJK = { 
-        nama: namaVal, waSiswa: waSiswaVal, waOrtu: waOrtuVal, kelas: kelasVal
-      };
+      let dataLJK = { nama: namaVal, sekolah: sekolahVal, kelas: kelasVal };
 
-      // Kumpulkan Jawaban berdasarkan configSoal yang didapat dari server
       configSoal.forEach(item => {
         if (item.tipe === 'single') {
           const el = document.querySelector(`input[name="q${item.no}"]:checked`);
@@ -246,7 +216,7 @@
         } else if (item.tipe === 'mcma') {
           const els = document.querySelectorAll(`input[name="q${item.no}"]:checked`);
           dataLJK[`q${item.no}`] = Array.from(els).map(e => e.value);
-        } else if (item.type === 'matrix') {
+        } else if (item.tipe === 'matrix') {
           let arr = [];
           for(let r=1; r<=item.baris; r++) {
             const el = document.querySelector(`input[name="q${item.no}_r${r}"]:checked`);
@@ -256,17 +226,32 @@
         }
       });
 
-      google.script.run
-        .withSuccessHandler(function(response) {
-          pesanDiv.innerHTML = response;
+      // Mengirim POST request via Fetch
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(dataLJK),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' } // text/plain digunakan agar tidak kena block CORS
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === 'success') {
+          pesanDiv.innerHTML = data.message;
           pesanDiv.className = 'success';
           btn.innerText = 'Terkirim';
           window.scrollTo(0, 0);
           
           document.getElementById('ljkForm').style.display = 'none';
           document.getElementById('timer-display').style.display = 'none';
-        })
-        .submitJawaban(dataLJK);
+        } else {
+          alert('Terjadi kesalahan di server: ' + data.message);
+          btn.innerText = 'Selesaikan & Kirim Jawaban'; btn.disabled = false;
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Gagal mengirim jawaban. Pastikan koneksi internet stabil.');
+        btn.innerText = 'Selesaikan & Kirim Jawaban'; btn.disabled = false;
+      });
     }
   </script>
 </body>
