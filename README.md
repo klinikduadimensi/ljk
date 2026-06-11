@@ -1,0 +1,2 @@
+# ljk
+LJK DIGITAL DUA DIMENSI
