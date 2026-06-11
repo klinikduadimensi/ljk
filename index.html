@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LJK Digital Terintegrasi</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 15px; margin-bottom: 25px; }
+        .header h1 { margin: 0; color: #333; }
+        .header p { color: #666; margin: 5px 0 0 0; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background-color: #0056b3; }
+        
+        /* Sectioning */
+        #section-ljk { display: none; } /* Disembunyikan awalnya */
+        
+        /* Style untuk soal (Contoh Pilihan Ganda sederhana) */
+        .soal-item { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
+        .opsi-group { display: flex; gap: 15px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>LJK Digital</h1>
+        <p>Ujian Berbasis Komputer & Spreadsheet</p>
+    </div>
+
+    <form id="ljkForm">
+        <div id="section-data-diri">
+            <h3>Identitas Siswa</h3>
+            <div class="form-group">
+                <label for="nama">Nama Lengkap *</label>
+                <input type="text" id="nama" name="nama" required>
+            </div>
+            <div class="form-group">
+                <label for="sekolah">Asal Sekolah *</label>
+                <input type="text" id="sekolah" name="sekolah" required>
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas *</label>
+                <input type="text" id="kelas" name="kelas" required>
+            </div>
+            <button type="button" class="btn" onclick="nextSection()">Lanjut ke Soal</button>
+        </div>
+
+        <div id="section-ljk">
+            <h3>Lembar Jawaban</h3>
+            <p style="color: red; font-size: 14px;">*Pastikan data diri Anda sudah benar sebelum mengisi soal.</p>
+            
+            <div id="tempat-soal">
+                <div class="soal-item">
+                    <label>1. Jawaban No 1</label>
+                    <div class="opsi-group">
+                        <label><input type="radio" name="soal_1" value="A" required> A</label>
+                        <label><input type="radio" name="soal_1" value="B"> B</label>
+                        <label><input type="radio" name="soal_1" value="C"> C</label>
+                        <label><input type="radio" name="soal_1" value="D"> D</label>
+                    </div>
+                </div>
+                </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn" style="background-color: #6c757d;" onclick="prevSection()">Kembali</button>
+                <button type="submit" class="btn" style="background-color: #28a745;">Kirim Jawaban</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbysDQ8V8DUSdS67BlfI0uWxaj7OyJemRlorU0Cya-7S4mOUVs-Bk8Fnk8FldHQxjUmQ4w/exec'; 
+
+    const sectionDataDiri = document.getElementById('section-data-diri');
+    const sectionLJK = document.getElementById('section-ljk');
+    const form = document.getElementById('ljkForm');
+
+    // Fungsi transisi ke LJK
+    function nextSection() {
+        // Validasi form data diri (HTML5 required check)
+        const nama = document.getElementById('nama').value;
+        const sekolah = document.getElementById('sekolah').value;
+        const kelas = document.getElementById('kelas').value;
+
+        if(!nama || !sekolah || !kelas) {
+            alert("Harap lengkapi Nama, Sekolah, dan Kelas terlebih dahulu!");
+            return;
+        }
+
+        sectionDataDiri.style.display = 'none';
+        sectionLJK.style.display = 'block';
+    }
+
+    // Fungsi kembali ke Data Diri
+    function prevSection() {
+        sectionLJK.style.display = 'none';
+        sectionDataDiri.style.display = 'block';
+    }
+
+    // Fungsi Submit Form ke Google Apps Script
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Kumpulkan data siswa
+        const payload = {
+            nama: document.getElementById('nama').value,
+            sekolah: document.getElementById('sekolah').value,
+            kelas: document.getElementById('kelas').value,
+            jawaban: {}
+        };
+
+        // Kumpulkan jawaban (Ambil semua input radio yang di-check)
+        const formData = new FormData(form);
+        for (let [key, value] of formData.entries()) {
+            if(key.startsWith('soal_')) {
+                payload.jawaban[key] = value;
+            }
+        }
+
+        // Tampilkan loading (opsional)
+        document.querySelector('button[type="submit"]').innerText = 'Mengirim...';
+
+        // Kirim via fetch API ke GAS
+        fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                alert('Jawaban berhasil dikirim!');
+                form.reset();
+                prevSection(); // Kembali ke halaman awal setelah sukses
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan, pastikan koneksi internet stabil.');
+        })
+        .finally(() => {
+            document.querySelector('button[type="submit"]').innerText = 'Kirim Jawaban';
+        });
+    });
+</script>
+</body>
+</html>
